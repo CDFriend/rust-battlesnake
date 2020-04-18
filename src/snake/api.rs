@@ -3,6 +3,7 @@
 
 use serde::Serialize;
 use serde::Deserialize;
+use std::default::Default;
 
 //
 // Game structures
@@ -19,6 +20,7 @@ pub struct Coords {
     pub y: u32,
 }
 
+#[derive(Default)]
 #[derive(Deserialize)]
 pub struct Snake {
     pub id: String,
