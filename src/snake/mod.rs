@@ -3,21 +3,22 @@
 // 
 
 pub mod api;
+mod map;
 
 use api::*;
 
 pub fn handle_start(config: SnakeConfig) -> StartResponse {
     StartResponse {
-        color: String::from("#FF0000"),
-        headType: String::from("beluga"),
-        tailType: String::from("block-bum"),
+        color: "#FF0000",
+        headType: "beluga",
+        tailType: "block-bum",
     }
 }
 
 pub fn handle_move(config: SnakeConfig) -> MoveResponse {
     MoveResponse {
-        r#move: String::from("left"),
-        shout: String::from("Shooooot!")
+        r#move: "left",
+        shout: "Shooooot!"
     }
 }
 
