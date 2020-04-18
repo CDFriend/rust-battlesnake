@@ -2,7 +2,7 @@ use std::ops::{Index, IndexMut};
 
 use crate::snake::api::Board;
 
-#[derive(PartialEq, Clone)]
+#[derive(PartialEq, Clone, Debug)]
 pub enum BoardSpace {
     EMPTY,
     SNAKE,
@@ -102,13 +102,13 @@ mod tests {
 
         // Food should be placed on the map at the correct location
         for coords in board.food {
-            assert!(map[(coords.x, coords.y)] == BoardSpace::FOOD)
+            assert_eq!(map[(coords.x, coords.y)], BoardSpace::FOOD)
         }
 
         // Snake should be placed in correct location
         for snake in board.snakes {
             for coords in snake.body {
-                assert!(map[(coords.x, coords.y)] == BoardSpace::SNAKE)
+                assert_eq!(map[(coords.x, coords.y)], BoardSpace::SNAKE)
             }
         }
     }
