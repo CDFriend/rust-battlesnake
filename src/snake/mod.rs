@@ -3,7 +3,6 @@
 // 
 
 pub mod api;
-mod map;
 
 use api::*;
 
