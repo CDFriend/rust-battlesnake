@@ -49,14 +49,15 @@ pub struct SnakeConfig {
 //
 
 #[derive(Serialize)]
+#[allow(non_snake_case)]
 pub struct StartResponse {
-    pub color: String,
-    pub headType: String,
-    pub tailType: String,
+    pub color: &'static str,
+    pub headType: &'static str,
+    pub tailType: &'static str,
 }
 
 #[derive(Serialize)]
 pub struct MoveResponse {
-    pub r#move: String,
-    pub shout: String,
+    pub r#move: &'static str,
+    pub shout: &'static str,
 }
