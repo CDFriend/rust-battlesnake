@@ -1,0 +1,10 @@
+name: Continuous Integration
+
+on: [push]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Unit Tests
+              run: cargo test
