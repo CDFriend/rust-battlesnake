@@ -1,12 +1,15 @@
-use std::ops::{Index, IndexMut};
-
+use crate::snake::utils::TwoDimensionalMap;
 use crate::snake::api::Board;
 
-#[derive(PartialEq, Clone, Debug)]
+#[derive(PartialEq, Clone, Copy, Debug)]
 pub enum BoardSpace {
     EMPTY,
     SNAKE,
     FOOD,
+}
+
+impl Default for BoardSpace {
+    fn default() -> Self { BoardSpace::EMPTY }
 }
 
 pub struct Map {
@@ -15,57 +18,35 @@ pub struct Map {
 
     // FIXME: using a matrix representation will use a lot of memory on large
     // boards. Use some sort of std::map equivalent?
-    vals: Vec<BoardSpace>,
-}
-
-impl Index<(u32, u32)> for Map {
-
-    type Output = BoardSpace;
-
-    fn index(&self, coords: (u32, u32)) -> &BoardSpace {
-        let x = coords.0;
-        let y = coords.1;
-
-        assert!(y * self.height + x < self.width * self.height);
-        &self.vals[(y * self.height + x) as usize]
-    }
-
-}
-
-impl IndexMut<(u32, u32)> for Map {
-
-    fn index_mut(&mut self, coords: (u32, u32)) -> &mut BoardSpace {
-        let x = coords.0;
-        let y = coords.1;
-
-        assert!(y * self.height + x < self.width * self.height);
-        &mut self.vals[(y * self.height + x) as usize]
-    }
-
+    vals: TwoDimensionalMap<BoardSpace>,
 }
 
 impl Map {
 
     pub fn new(board: &Board) -> Map {
 
-        let mut map = Map {
-            width: board.width,
-            height: board.height,
-            vals: vec![BoardSpace::EMPTY; (board.width * board.height) as usize],
-        };
+        let mut vals = TwoDimensionalMap::new(board.width as usize, board.height as usize);
 
         // Add food first, then snakes
         for coords in board.food.iter() {
-            map[(coords.x, coords.y)] = BoardSpace::FOOD;
+            vals[(coords.x as usize, coords.y as usize)] = BoardSpace::FOOD;
         }
 
         for snake in board.snakes.iter() {
             for coords in snake.body.iter() {
-                map[(coords.x, coords.y)] = BoardSpace::SNAKE;
+                vals[(coords.x as usize, coords.y as usize)] = BoardSpace::SNAKE;
             }
         }
 
-        map
+        Map {
+            width: board.width,
+            height: board.height,
+            vals: vals,
+        }
+    }
+
+    pub fn at(&self, x: u32, y: u32) -> BoardSpace {
+        self.vals[(x as usize, y as usize)]
     }
 
 }
@@ -102,13 +83,13 @@ mod tests {
 
         // Food should be placed on the map at the correct location
         for coords in board.food {
-            assert_eq!(map[(coords.x, coords.y)], BoardSpace::FOOD)
+            assert_eq!(map.at(coords.x, coords.y), BoardSpace::FOOD)
         }
 
         // Snake should be placed in correct location
         for snake in board.snakes {
             for coords in snake.body {
-                assert_eq!(map[(coords.x, coords.y)], BoardSpace::SNAKE)
+                assert_eq!(map.at(coords.x, coords.y), BoardSpace::SNAKE)
             }
         }
     }
