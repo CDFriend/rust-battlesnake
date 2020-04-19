@@ -9,6 +9,8 @@ mod path;
 
 use api::*;
 use map::Map;
+use utils::Move;
+use path::shortest_path_to;
 
 pub fn handle_start(_config: SnakeConfig) -> StartResponse {
     StartResponse {
@@ -20,25 +22,36 @@ pub fn handle_start(_config: SnakeConfig) -> StartResponse {
 
 pub fn handle_move(config: SnakeConfig) -> MoveResponse {
 
-    // Find nearest food
-    let food = &config.board.food[0];
+    // Chase your tail!
     let head = &config.you.body[0];
+    let tail = &config.you.body[config.you.body.len() - 1];
 
-    let map = Map::new(&config.board);
-    let path = path::shortest_path_to(&map, (head.x, head.y), (food.x, food.y));
+    let map = Map::new(&config);
 
-    let mut move_str = "left";
-    if path.is_some() {
-        let path_src = &path.unwrap()[0];
-
-        // If path has a next move
-        if path_src.next_move.is_some() {
-            move_str = path_src.next_move.as_ref().unwrap().to_string();
+    let mut move_val = Move::Left;
+    if config.you.body.len() < 3 {
+        // Special case where head and tail are the same node (should only be
+        // first move). Just try and find a direction that won't kill you.
+        move_val = map.find_safe_move();
+    }
+    else {
+        // Try to find your tail
+        move_val = match shortest_path_to(&map, (head.x, head.y), (tail.x, tail.y)) {
+            Some(path) => {
+                // We've already checked that the head and tail are not the same node,
+                // so we should have more than one node in our path
+                assert!(path[0].next_move.is_some());
+                path[0].next_move.unwrap_or(Move::Left)
+            },
+            None => {
+                // No way to find your tail, so just go somewhere safe
+                map.find_safe_move()
+            }
         }
     }
 
     MoveResponse {
-        r#move: move_str,
+        r#move: move_val.to_string(),
         shout: "Shooooot!"
     }
 }

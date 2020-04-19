@@ -1,5 +1,27 @@
 use std::ops::{Index, IndexMut};
 
+/// Potential moves a snake can make
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub enum Move {
+    Up,
+    Down,
+    Left,
+    Right
+}
+
+impl Move {
+
+    pub fn to_string(&self) -> &'static str {
+        match self {
+            Move::Up => "up",
+            Move::Down => "down",
+            Move::Left => "left",
+            Move::Right => "right"
+        }
+    }
+
+}
+
 /// Simple two-dimensional array implementation
 pub struct TwoDimensionalMap<T: Default + Clone> {
     width: usize,

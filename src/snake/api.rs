@@ -14,7 +14,7 @@ pub struct Game {
     pub id: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, PartialEq)]
 pub struct Coords {
     pub x: u32,
     pub y: u32,

@@ -6,29 +6,8 @@ use queues::*;
 use std::rc::Rc;
 use std::collections::HashSet;
 
-use super::map::{Map, BoardSpace};
-
-/// Potential moves a snake can make
-#[derive(Debug, PartialEq)]
-pub enum Move {
-    Up,
-    Down,
-    Left,
-    Right
-}
-
-impl Move {
-
-    pub fn to_string(&self) -> &'static str {
-        match self {
-            Move::Up => "up",
-            Move::Down => "down",
-            Move::Left => "left",
-            Move::Right => "right"
-        }
-    }
-
-}
+use super::map::Map;
+use super::utils::Move;
 
 struct BfsNode {
     /// Distance from root node
@@ -151,7 +130,7 @@ fn bfs_to(map: &Map, start_coords: (u32, u32), target_coords: (u32, u32)) -> Opt
 
         // Examine neighbors, and add to the queue if they are valid nodes
 
-        if is_valid_node(map, (x + 1, y)) {
+        if map.is_safe_node((x + 1, y)) {
             // Right
             q.add(Rc::new(BfsNode{
                 x: x + 1,
@@ -161,7 +140,7 @@ fn bfs_to(map: &Map, start_coords: (u32, u32), target_coords: (u32, u32)) -> Opt
             })).unwrap();
         }
 
-        if x != 0 && is_valid_node(map, (x - 1, y)) {
+        if x != 0 && map.is_safe_node((x - 1, y)) {
             // Left
             q.add(Rc::new(BfsNode{
                 x: x - 1,
@@ -171,7 +150,7 @@ fn bfs_to(map: &Map, start_coords: (u32, u32), target_coords: (u32, u32)) -> Opt
             })).unwrap();
         }
 
-        if y != 0 && is_valid_node(map, (x, y - 1)) {
+        if y != 0 && map.is_safe_node((x, y - 1)) {
             // Up
             q.add(Rc::new(BfsNode{
                 x: x,
@@ -181,7 +160,7 @@ fn bfs_to(map: &Map, start_coords: (u32, u32), target_coords: (u32, u32)) -> Opt
             })).unwrap();
         }
 
-        if is_valid_node(map, (x, y + 1)) {
+        if map.is_safe_node((x, y + 1)) {
             // Down
             q.add(Rc::new(BfsNode{
                 x: x,
@@ -194,23 +173,6 @@ fn bfs_to(map: &Map, start_coords: (u32, u32), target_coords: (u32, u32)) -> Opt
 
     // If we reached the end of the loop, target node is inaccessible
     None
-}
-
-/// Returns true if the provided coordinates can be traversed on the map.
-fn is_valid_node(map: &Map, coords: (u32, u32)) -> bool {
-    if coords.0 >= map.width {
-        return false;
-    }
-
-    if coords.1 >= map.height {
-        return false;
-    }
-
-    if map.at(coords.0, coords.1) == BoardSpace::SNAKE {
-        return false;
-    }
-
-    true
 }
 
 #[cfg(test)]
