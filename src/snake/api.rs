@@ -9,7 +9,7 @@ use std::default::Default;
 // Game structures
 //
 
-#[derive(Deserialize)]
+#[derive(Default, Deserialize)]
 pub struct Game {
     pub id: String,
 }
@@ -20,7 +20,6 @@ pub struct Coords {
     pub y: u32,
 }
 
-#[derive(Default)]
 #[derive(Deserialize)]
 pub struct Snake {
     pub id: String,
@@ -30,7 +29,22 @@ pub struct Snake {
     pub shout: String,
 }
 
-#[derive(Deserialize)]
+// Default snake implementation for unit testing
+impl Default for Snake {
+    fn default() -> Self {
+        Snake {
+            id: String::from("snake_id"), 
+            name: String::from("Snekky Snek"),
+            health: 100,
+            body: vec!(
+                Coords { x: 0, y: 0 }
+            ),
+            shout: String::from("I am snek!")
+        }
+    }
+}
+
+#[derive(Default, Deserialize)]
 pub struct Board {
     pub height: u32,
     pub width: u32,
@@ -38,7 +52,7 @@ pub struct Board {
     pub snakes: Vec<Snake>,
 }
 
-#[derive(Deserialize)]
+#[derive(Default, Deserialize)]
 pub struct SnakeConfig {
     pub game: Game,
     pub turn: u32,

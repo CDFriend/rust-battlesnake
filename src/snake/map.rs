@@ -153,35 +153,39 @@ mod tests {
     #[test]
     fn populates_food_and_snakes() {
         // Construct dummy board
-        let board = Board {
-            width: 25,
-            height: 20,
-            snakes: vec!(
-                Snake {
-                    body: vec!(
-                        Coords { x: 1, y: 1 },
-                        Coords { x: 1, y: 2 },
-                        Coords { x: 2, y: 2 },
-                    ),
-                    ..Default::default()
-                }
-            ),
-            food: vec!(
-                Coords { x: 22, y: 18 },
-                Coords { x: 5,  y: 2 }
-            ),
+        let config = SnakeConfig {
+            board: Board {
+                width: 25,
+                height: 20,
+                snakes: vec!(
+                    Snake {
+                        body: vec!(
+                            Coords { x: 1, y: 1 },
+                            Coords { x: 1, y: 2 },
+                            Coords { x: 2, y: 2 },
+                        ),
+                        ..Default::default()
+                    }
+                ),
+                food: vec!(
+                    Coords { x: 22, y: 18 },
+                    Coords { x: 5,  y: 2 }
+                ),
+            },
+            ..Default::default()
         };
 
-        let map = Map::new(&board);
+        let map = Map::new(&config);
+        let board = &config.board;
 
         // Food should be placed on the map at the correct location
-        for coords in board.food {
+        for coords in board.food.iter() {
             assert_eq!(map.at(coords.x, coords.y), BoardSpace::FOOD)
         }
 
         // Snake should be placed in correct location
-        for snake in board.snakes {
-            for coords in snake.body {
+        for snake in board.snakes.iter() {
+            for coords in snake.body.iter() {
                 assert_eq!(map.at(coords.x, coords.y), BoardSpace::SNAKE)
             }
         }

@@ -179,7 +179,7 @@ fn bfs_to(map: &Map, start_coords: (u32, u32), target_coords: (u32, u32)) -> Opt
 mod tests {
 
     use super::*;
-    use crate::snake::api::{Board, Snake, Coords};
+    use crate::snake::api::*;
 
     #[test]
     fn bfs_finds_target_node() {
@@ -193,21 +193,24 @@ mod tests {
         // We should be able to reach the target node (T) from our current
         // position (Y).
 
-        let map = Map::new(&Board{
-            width: 6,
-            height: 5,
-            food: vec![],
-            snakes: vec!(
-                Snake {
-                    body: vec!(
-                        Coords { x: 1, y: 0 },
-                        Coords { x: 1, y: 1 },
-                        Coords { x: 1, y: 2 },
-                        Coords { x: 1, y: 3 },
-                    ),
-                    ..Default::default()
-                }
-            )
+        let map = Map::new(&SnakeConfig {
+            board: Board{
+                width: 6,
+                height: 5,
+                snakes: vec!(
+                    Snake {
+                        body: vec!(
+                            Coords { x: 1, y: 0 },
+                            Coords { x: 1, y: 1 },
+                            Coords { x: 1, y: 2 },
+                            Coords { x: 1, y: 3 },
+                        ),
+                        ..Default::default()
+                    }
+                ),
+                ..Default::default()
+            },
+            ..Default::default()
         });
 
         // Should be able to reach node
@@ -238,22 +241,25 @@ mod tests {
         // The BFS algorithm should determine that that target node is inaccessible
         // from the source.
 
-        let map = Map::new(&Board{
-            width: 6,
-            height: 5,
-            food: vec![],
-            snakes: vec!(
-                Snake {
-                    body: vec!(
-                        Coords { x: 1, y: 0 },
-                        Coords { x: 1, y: 1 },
-                        Coords { x: 1, y: 2 },
-                        Coords { x: 1, y: 3 },
-                        Coords { x: 1, y: 4 },
-                    ),
-                    ..Default::default()
-                }
-            )
+        let map = Map::new(&SnakeConfig {
+            board: Board {
+                width: 6,
+                height: 5,
+                snakes: vec!(
+                    Snake {
+                        body: vec!(
+                            Coords { x: 1, y: 0 },
+                            Coords { x: 1, y: 1 },
+                            Coords { x: 1, y: 2 },
+                            Coords { x: 1, y: 3 },
+                            Coords { x: 1, y: 4 },
+                        ),
+                        ..Default::default()
+                    }
+                ),
+                ..Default::default()
+            },
+            ..Default::default()
         });
 
         // Should be able to reach node
@@ -265,11 +271,13 @@ mod tests {
     fn bfs_handles_short_path() {
         // BFS algorithm should be able to handle a short (1-node) path
 
-        let map = Map::new(&Board {
-            width: 20,
-            height: 20,
-            food: vec![],
-            snakes: vec![]
+        let map = Map::new(&SnakeConfig {
+            board: Board {
+                width: 20,
+                height: 20,
+                ..Default::default()
+            },
+            ..Default::default()
         });
 
         let path = shortest_path_to(&map, (0, 0), (0, 1));
@@ -288,11 +296,13 @@ mod tests {
         // In the strange case where the source and target node are the
         // same, the BFS algorithm should return a path with only the source node.
 
-        let map = Map::new(&Board {
-            width: 20,
-            height: 20,
-            food: vec![],
-            snakes: vec![]
+        let map = Map::new(&SnakeConfig {
+            board: Board {
+                width: 20,
+                height: 20,
+                ..Default::default()
+            },
+            ..Default::default()
         });
 
         let path = shortest_path_to(&map, (0, 0), (0, 0));
