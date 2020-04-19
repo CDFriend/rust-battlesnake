@@ -10,7 +10,7 @@ use super::map::{Map, BoardSpace};
 
 /// Potential moves a snake can make
 #[derive(Debug, PartialEq)]
-enum Move {
+pub enum Move {
     UP,
     DOWN,
     LEFT,
@@ -31,17 +31,17 @@ struct BfsNode {
 
 /// Represents a node on a snake's path. Paths are represented as linked lists from source to 
 /// destination.
-struct PathNode {
+pub struct PathNode {
     // Coordinates of current node (x, y)
     coords: (u32, u32),
 
     // Next move to take on the path, or None if path is complete
-    next_move: Option<Move>,
+    pub next_move: Option<Move>,
 }
 
 
 /// Gets a path from the source node to the target node.
-fn shortest_path_to(map: &Map, start: (u32, u32), target: (u32, u32)) -> Option<Vec<PathNode>> {
+pub fn shortest_path_to(map: &Map, start: (u32, u32), target: (u32, u32)) -> Option<Vec<PathNode>> {
 
     // Run BFS - is there a path to the target?
     let mut cur_bfs_node = match bfs_to(map, start, target) {
