@@ -11,10 +11,10 @@ use super::map::{Map, BoardSpace};
 /// Potential moves a snake can make
 #[derive(Debug, PartialEq)]
 pub enum Move {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT
+    Up,
+    Down,
+    Left,
+    Right
 }
 
 struct BfsNode {
@@ -64,16 +64,16 @@ pub fn shortest_path_to(map: &Map, start: (u32, u32), target: (u32, u32)) -> Opt
             let next_node = &path[idx - 1];
 
             if cur_bfs_node.x > next_node.coords.0 {
-                next_move = Some(Move::LEFT);
+                next_move = Some(Move::Left);
             }
             else if cur_bfs_node.x < next_node.coords.0 {
-                next_move = Some(Move::RIGHT);
+                next_move = Some(Move::Right);
             }
             else if cur_bfs_node.y > next_node.coords.1 {
-                next_move = Some(Move::UP);
+                next_move = Some(Move::Up);
             }
             else if cur_bfs_node.y < next_node.coords.1 {
-                next_move = Some(Move::DOWN);
+                next_move = Some(Move::Down);
             }
         }
 
