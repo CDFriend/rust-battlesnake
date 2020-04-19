@@ -8,6 +8,15 @@ use std::collections::HashSet;
 
 use super::map::{Map, BoardSpace};
 
+/// Potential moves a snake can make
+#[derive(Debug, PartialEq)]
+enum Move {
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
+}
+
 struct BfsNode {
     /// Distance from root node
     dist: u32,
@@ -18,6 +27,72 @@ struct BfsNode {
     /// Coordinates
     x: u32,
     y: u32,
+}
+
+/// Represents a node on a snake's path. Paths are represented as linked lists from source to 
+/// destination.
+struct PathNode {
+    // Coordinates of current node (x, y)
+    coords: (u32, u32),
+
+    // Next move to take on the path, or None if path is complete
+    next_move: Option<Move>,
+}
+
+
+/// Gets a path from the source node to the target node.
+fn shortest_path_to(map: &Map, start: (u32, u32), target: (u32, u32)) -> Option<Vec<PathNode>> {
+
+    // Run BFS - is there a path to the target?
+    let mut cur_bfs_node = match bfs_to(map, start, target) {
+        Some(rc_target) => rc_target,
+        None => return None
+    };
+
+    // Follow path backwards until we reach the source node.
+    // Total required space for the path should be equal to the distance of the path.
+    let mut path = Vec::<PathNode>::with_capacity((cur_bfs_node.dist + 1) as usize);
+
+    let mut idx = 0;
+    loop {
+
+        // Determine next move
+        let mut next_move : Option<Move> = None;
+        if idx > 0 {
+
+            // Determine the required move from the current node to the next one in the path
+            let next_node = &path[idx - 1];
+
+            if cur_bfs_node.x > next_node.coords.0 {
+                next_move = Some(Move::LEFT);
+            }
+            else if cur_bfs_node.x < next_node.coords.0 {
+                next_move = Some(Move::RIGHT);
+            }
+            else if cur_bfs_node.y > next_node.coords.1 {
+                next_move = Some(Move::UP);
+            }
+            else if cur_bfs_node.y < next_node.coords.1 {
+                next_move = Some(Move::DOWN);
+            }
+        }
+
+        path.push(PathNode{
+            coords: (cur_bfs_node.x, cur_bfs_node.y),
+            next_move: next_move
+        });
+
+        match &cur_bfs_node.prev {
+            Some(node_rc) => cur_bfs_node = node_rc.clone(),
+            None => break
+        };
+
+        idx = idx + 1;
+    }
+
+    path.reverse();
+
+    Some(path)
 }
 
 
@@ -161,8 +236,19 @@ mod tests {
         });
 
         // Should be able to reach node
-        let opt_target = bfs_to(&map, (2, 4), (0, 3));
-        assert!(opt_target.is_some());
+        let path = shortest_path_to(&map, (2, 4), (0, 3));
+        assert!(path.is_some());
+
+        // Path should be (2, 4), (1, 4), (0, 4), (0, 3)
+        let path = path.unwrap();
+        assert_eq!(path[0].coords, (2, 4));
+        assert_eq!(path[0].next_move, Some(Move::LEFT));
+        assert_eq!(path[1].coords, (1, 4));
+        assert_eq!(path[1].next_move, Some(Move::LEFT));
+        assert_eq!(path[2].coords, (0, 4));
+        assert_eq!(path[2].next_move, Some(Move::UP));
+        assert_eq!(path[3].coords, (0, 3));
+        assert_eq!(path[3].next_move, None);
     }
 
 }
