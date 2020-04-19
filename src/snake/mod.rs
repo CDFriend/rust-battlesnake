@@ -9,7 +9,6 @@ mod path;
 
 use api::*;
 use map::Map;
-use path::Move;
 
 pub fn handle_start(_config: SnakeConfig) -> StartResponse {
     StartResponse {
@@ -34,12 +33,7 @@ pub fn handle_move(config: SnakeConfig) -> MoveResponse {
 
         // If path has a next move
         if path_src.next_move.is_some() {
-            move_str = match path_src.next_move.as_ref().unwrap() {
-                Move::Left => "left",
-                Move::Right => "right",
-                Move::Up => "up",
-                Move::Down => "down",
-            };
+            move_str = path_src.next_move.as_ref().unwrap().to_string();
         }
     }
 

@@ -17,6 +17,19 @@ pub enum Move {
     Right
 }
 
+impl Move {
+
+    pub fn to_string(&self) -> &'static str {
+        match self {
+            Move::Up => "up",
+            Move::Down => "down",
+            Move::Left => "left",
+            Move::Right => "right"
+        }
+    }
+
+}
+
 struct BfsNode {
     /// Distance from root node
     dist: u32,
