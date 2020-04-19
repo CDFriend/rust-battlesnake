@@ -242,13 +242,91 @@ mod tests {
         // Path should be (2, 4), (1, 4), (0, 4), (0, 3)
         let path = path.unwrap();
         assert_eq!(path[0].coords, (2, 4));
-        assert_eq!(path[0].next_move, Some(Move::LEFT));
+        assert_eq!(path[0].next_move, Some(Move::Left));
         assert_eq!(path[1].coords, (1, 4));
-        assert_eq!(path[1].next_move, Some(Move::LEFT));
+        assert_eq!(path[1].next_move, Some(Move::Left));
         assert_eq!(path[2].coords, (0, 4));
-        assert_eq!(path[2].next_move, Some(Move::UP));
+        assert_eq!(path[2].next_move, Some(Move::Up));
         assert_eq!(path[3].coords, (0, 3));
         assert_eq!(path[3].next_move, None);
+    }
+
+    #[test]
+    fn bfs_determines_target_node_inaccessible() {
+        // Board state:
+        //   - H - - - -
+        //   - S - - - -
+        //   - S - - - -
+        //   T S - - - -
+        //   - S Y - - -
+        //
+        // The BFS algorithm should determine that that target node is inaccessible
+        // from the source.
+
+        let map = Map::new(&Board{
+            width: 6,
+            height: 5,
+            food: vec![],
+            snakes: vec!(
+                Snake {
+                    body: vec!(
+                        Coords { x: 1, y: 0 },
+                        Coords { x: 1, y: 1 },
+                        Coords { x: 1, y: 2 },
+                        Coords { x: 1, y: 3 },
+                        Coords { x: 1, y: 4 },
+                    ),
+                    ..Default::default()
+                }
+            )
+        });
+
+        // Should be able to reach node
+        let path = shortest_path_to(&map, (2, 4), (0, 3));
+        assert!(path.is_none());
+    }
+
+    #[test]
+    fn bfs_handles_short_path() {
+        // BFS algorithm should be able to handle a short (1-node) path
+
+        let map = Map::new(&Board {
+            width: 20,
+            height: 20,
+            food: vec![],
+            snakes: vec![]
+        });
+
+        let path = shortest_path_to(&map, (0, 0), (0, 1));
+        assert!(path.is_some());
+
+        // Path should include source node and target node
+        let path = path.unwrap();
+        assert_eq!(path[0].coords, (0, 0));
+        assert_eq!(path[0].next_move, Some(Move::Down));
+        assert_eq!(path[1].coords, (0, 1));
+        assert!(path[1].next_move.is_none());
+    }
+
+    #[test]
+    fn bfs_handles_no_path() {
+        // In the strange case where the source and target node are the
+        // same, the BFS algorithm should return a path with only the source node.
+
+        let map = Map::new(&Board {
+            width: 20,
+            height: 20,
+            food: vec![],
+            snakes: vec![]
+        });
+
+        let path = shortest_path_to(&map, (0, 0), (0, 0));
+        assert!(path.is_some());
+
+        // Path should include source node and target node
+        let path = path.unwrap();
+        assert_eq!(path[0].coords, (0, 0));
+        assert!(path[0].next_move.is_none());
     }
 
 }
