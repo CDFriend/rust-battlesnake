@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 rouille = "^3.0.0"
 serde = { version = "1.0.106", features = ["derive"] }
+queues = "^1.0.2"

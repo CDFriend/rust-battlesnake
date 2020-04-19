@@ -5,6 +5,7 @@
 pub mod api;
 mod map;
 mod utils;
+mod path;
 
 use api::*;
 

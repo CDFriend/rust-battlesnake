@@ -13,8 +13,8 @@ impl Default for BoardSpace {
 }
 
 pub struct Map {
-    width: u32,
-    height: u32,
+    pub width: u32,
+    pub height: u32,
 
     // FIXME: using a matrix representation will use a lot of memory on large
     // boards. Use some sort of std::map equivalent?

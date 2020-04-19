@@ -67,15 +67,15 @@ mod tests {
     #[test]
     #[should_panic]
     fn should_panic_when_out_of_bounds_requested_x() {
-        let mut arr = TwoDimensionalMap::<i32>::new(30, 30);
-
+        let arr = TwoDimensionalMap::<i32>::new(30, 30);
+        
         arr[(31, 15)];
     }
 
     #[test]
     #[should_panic]
     fn should_panic_when_out_of_bounds_requested_y() {
-        let mut arr = TwoDimensionalMap::<i32>::new(30, 30);
+        let arr = TwoDimensionalMap::<i32>::new(30, 30);
 
         arr[(15, 31)];
     }
