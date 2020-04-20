@@ -25,7 +25,7 @@ struct BfsNode {
 /// destination.
 pub struct PathNode {
     // Coordinates of current node (x, y)
-    coords: (u32, u32),
+    pub coords: (u32, u32),
 
     // Next move to take on the path, or None if path is complete
     pub next_move: Option<Move>,
@@ -114,7 +114,7 @@ fn bfs_to(map: &Map, start_coords: (u32, u32), target_coords: (u32, u32)) -> Opt
 
         let x = (*cur_node).x;
         let y = (*cur_node).y;
-
+        
         // Have we seen this node before?
         if traversed.contains(&(x, y)) {
             continue;
@@ -128,9 +128,14 @@ fn bfs_to(map: &Map, start_coords: (u32, u32), target_coords: (u32, u32)) -> Opt
             return Some(cur_node);
         }
 
-        // Examine neighbors, and add to the queue if they are valid nodes
+        // If the node is not safe, don't examine its neighbors. Source and target
+        // nodes may be unsafe, but we may not traverse any other unsafe nodes.
+        if !map.is_safe_node((x, y)) && (x, y) != start_coords {
+            continue;
+        }
 
-        if map.is_safe_node((x + 1, y)) {
+        // Examine neighbors, and add to the queue if they are in bounds
+        if x + 1 < map.width {
             // Right
             q.add(Rc::new(BfsNode{
                 x: x + 1,
@@ -140,7 +145,7 @@ fn bfs_to(map: &Map, start_coords: (u32, u32), target_coords: (u32, u32)) -> Opt
             })).unwrap();
         }
 
-        if x != 0 && map.is_safe_node((x - 1, y)) {
+        if x != 0 {
             // Left
             q.add(Rc::new(BfsNode{
                 x: x - 1,
@@ -150,7 +155,7 @@ fn bfs_to(map: &Map, start_coords: (u32, u32), target_coords: (u32, u32)) -> Opt
             })).unwrap();
         }
 
-        if y != 0 && map.is_safe_node((x, y - 1)) {
+        if y != 0 {
             // Up
             q.add(Rc::new(BfsNode{
                 x: x,
@@ -160,7 +165,7 @@ fn bfs_to(map: &Map, start_coords: (u32, u32), target_coords: (u32, u32)) -> Opt
             })).unwrap();
         }
 
-        if map.is_safe_node((x, y + 1)) {
+        if y + 1 < map.height {
             // Down
             q.add(Rc::new(BfsNode{
                 x: x,
@@ -312,6 +317,46 @@ mod tests {
         let path = path.unwrap();
         assert_eq!(path[0].coords, (0, 0));
         assert!(path[0].next_move.is_none());
+    }
+
+    #[test]
+    fn bfs_finds_path_to_unsafe_node() {
+        // S S - - -
+        // S - - - -
+        //
+        // The BFS algorithm should be able to navigate to an unsafe space (e.g. to
+        // a snake's head or tail).
+        let map = Map::new(&SnakeConfig {
+            board: Board {
+                width: 5,
+                height: 3,
+                snakes: vec!(
+                    Snake {
+                        body: vec!(
+                            Coords { x: 1, y: 0 },
+                            Coords { x: 0, y: 0 },
+                            Coords { x: 0, y: 1 }
+                        ),
+                        ..Default::default()
+                    }
+                ),
+                ..Default::default()
+            },
+            ..Default::default()
+        });
+
+        // Path should exist
+        let path = shortest_path_to(&map, (1, 0), (0, 1));
+        assert!(path.is_some());
+
+        // Path should be (1, 0), (1, 1), (0, 1)
+        let path = path.unwrap();
+        assert_eq!(path[0].coords, (1, 0));
+        assert_eq!(path[0].next_move, Some(Move::Down));
+        assert_eq!(path[1].coords, (1, 1));
+        assert_eq!(path[1].next_move, Some(Move::Left));
+        assert_eq!(path[2].coords, (0, 1));
+        assert!(path[2].next_move.is_none());
     }
 
 }

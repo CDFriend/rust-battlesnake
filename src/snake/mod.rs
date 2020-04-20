@@ -20,16 +20,21 @@ pub fn handle_start(_config: SnakeConfig) -> StartResponse {
     }
 }
 
-pub fn handle_move(config: SnakeConfig) -> MoveResponse {
+pub fn handle_move(mut config: SnakeConfig) -> MoveResponse {
+
+    // Remove duplicates from body. This might happen at the beginning of the game,
+    // where we're sent 3 of the same sets of coordinates.
+    config.you.body.dedup();
 
     // Chase your tail!
     let head = &config.you.body[0];
     let tail = &config.you.body[config.you.body.len() - 1];
 
     let map = Map::new(&config);
-
+    
+    let body = &config.you.body;
     let mut move_val = Move::Left;
-    if config.you.body.len() < 3 {
+    if body.len() < 3 {
         // Special case where head and tail are the same node (should only be
         // first move). Just try and find a direction that won't kill you.
         move_val = map.find_safe_move();
