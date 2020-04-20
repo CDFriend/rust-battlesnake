@@ -16,7 +16,7 @@ pub fn handle_start(_config: SnakeConfig) -> StartResponse {
     StartResponse {
         color: "#FF0000",
         headType: "beluga",
-        tailType: "block-bum",
+        tailType: "hook",
     }
 }
 
